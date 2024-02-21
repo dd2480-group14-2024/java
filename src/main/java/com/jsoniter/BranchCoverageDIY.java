@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class BranchCoverageDIY {
     
-    private static final int[] NUM_BRANCHES = {10, 10, 10, 10, 10};
+    private static final int[] NUM_BRANCHES = {40, 10, 10, 10, 10}; 
 
     private static final String[] FUNCTION_NAMES = {
         "IterImpl.readStringSlowPath",
@@ -41,6 +41,11 @@ public class BranchCoverageDIY {
                 if (branchCoverageMap.get(function) != null) {
                     writer.write("Branches taken: " + branchCoverageMap.get(function).size()  + "\n");
                     writer.write("Percentage: " + ((double) branchCoverageMap.get(function).size() / NUM_BRANCHES[function-1] * 100.0)  + " %\n");
+                    writer.write("Branches taken: ");
+                    for (int num : branchCoverageMap.get(function)) {
+                        writer.write(num + ", ");
+                    }
+                    writer.write("\n");
                 } else {
                     writer.write("Branches taken: " + 0 + "\n");
                     writer.write("Percentage: " + 0  + " %\n");
