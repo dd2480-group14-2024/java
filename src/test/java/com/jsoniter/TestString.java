@@ -10,7 +10,7 @@ import java.io.IOException;
 public class TestString extends TestCase {
 
     static {
-//        JsonIterator.enableStreamingSupport();
+//       JsonIterator.enableStreamingSupport();
     }
 
     public void test_ascii_string() throws IOException {

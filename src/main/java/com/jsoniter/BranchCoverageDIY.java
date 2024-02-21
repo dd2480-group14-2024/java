@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class BranchCoverageDIY {
     
-    private static final int[] NUM_BRANCHES = {40, 10, 10, 10, 10}; 
+    private static final int[] NUM_BRANCHES = {40, 39, 10, 10, 10}; 
 
     private static final String[] FUNCTION_NAMES = {
         "IterImpl.readStringSlowPath",
