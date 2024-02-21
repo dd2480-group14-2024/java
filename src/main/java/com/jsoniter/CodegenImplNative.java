@@ -201,24 +201,31 @@ class CodegenImplNative {
         // the field decoder might be registered directly
         Decoder decoder = JsoniterSpi.getDecoder(cacheKey);
         if (decoder == null) {
+            BranchCoverageDIY.setBranchReached(5, 1); // ID: 1
             // if cache key is for field, and there is no field decoder specified
             // update cache key for normal type
             cacheKey = TypeLiteral.create(valueType).getDecoderCacheKey();
             decoder = JsoniterSpi.getDecoder(cacheKey);
             if (decoder == null) {
+                BranchCoverageDIY.setBranchReached(5, 2); // ID: 2
                 if (valueType instanceof Class) {
+                    BranchCoverageDIY.setBranchReached(5, 3); // ID: 3
                     Class clazz = (Class) valueType;
                     String nativeRead = NATIVE_READS.get(clazz.getCanonicalName());
                     if (nativeRead != null) {
+                        BranchCoverageDIY.setBranchReached(5, 4); // ID: 4
                         return nativeRead;
                     }
                 } else if (valueType instanceof WildcardType) {
+                    BranchCoverageDIY.setBranchReached(5, 5); // ID: 5
                     return NATIVE_READS.get(Object.class.getCanonicalName());
                 }
                 Codegen.getDecoder(cacheKey, valueType);
                 if (Codegen.canStaticAccess(cacheKey)) {
+                    BranchCoverageDIY.setBranchReached(5, 6); // ID: 6
                     return String.format("%s.decode_(iter)", cacheKey);
                 } else {
+                    BranchCoverageDIY.setBranchReached(5, 7); // ID: 7
                     // can not use static "decode_" method to access, go through codegen cache
                     return String.format("com.jsoniter.CodegenAccess.read(\"%s\", iter)", cacheKey);
                 }
