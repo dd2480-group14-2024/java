@@ -13,6 +13,14 @@ import java.util.Set;
 public class BranchCoverageDIY {
     
     private static final int[] NUM_BRANCHES = {10, 10, 10, 10, 10};
+
+    private static final String[] FUNCTION_NAMES = {
+        "IterImpl.readStringSlowPath",
+        "IterImplForStreaming.readStringSlowPath",
+        "CodegenImplObjectStrict.genObjectUsingStrict",
+        "GsonCompatabilityMode.createDecoder",
+        "CodegenImplNative.genReadOp"
+    };
     
     private static Map<Integer, Set<Integer>> branchCoverageMap = new HashMap<>(); // key: function ID, value: set containing branches reached.
 
@@ -28,7 +36,7 @@ public class BranchCoverageDIY {
         try {
             Files.createDirectories(directoryPath);
             try (FileWriter writer = new FileWriter(filePath.toFile())) {
-                writer.write("Results\n");
+                writer.write("Results for function: " + FUNCTION_NAMES[function-1] + "\n");
                 writer.write("Total branches for function " + function + ": " + NUM_BRANCHES[function-1] + "\n");
                 if (branchCoverageMap.get(function) != null) {
                     writer.write("Branches taken: " + branchCoverageMap.get(function).size()  + "\n");
