@@ -44,12 +44,15 @@ class CodegenImplObjectStrict {
         append(lines, "if (iter.readNull()) { return null; }");
         // === if input is empty obj, return empty obj
         if (hasRequiredBinding) {
+            BranchCoverageDIY.setBranchReached(3, 1); // ID: 1
             append(lines, "long tracker = 0;");
         }
         if (desc.ctor.parameters.isEmpty()) {
+            BranchCoverageDIY.setBranchReached(3, 2); // ID: 2
             append(lines, "{{clazz}} obj = {{newInst}};");
             append(lines, "if (!com.jsoniter.CodegenAccess.readObjectStart(iter)) {");
             if (hasRequiredBinding) {
+                BranchCoverageDIY.setBranchReached(3, 3); // ID: 3
                 appendMissingRequiredProperties(lines, desc);
             }
             append(lines, "return obj;");
@@ -57,33 +60,43 @@ class CodegenImplObjectStrict {
             // because obj can be created without binding
             // so that fields and setters can be bind to obj directly without temp var
         } else {
+            BranchCoverageDIY.setBranchReached(3, 4); // ID: 4
             for (Binding parameter : desc.ctor.parameters) {
+                BranchCoverageDIY.setBranchReached(3, 5); // ID: 5
                 appendVarDef(lines, parameter);
             }
             append(lines, "if (!com.jsoniter.CodegenAccess.readObjectStart(iter)) {");
             if (hasRequiredBinding) {
+                BranchCoverageDIY.setBranchReached(3, 6); // ID: 6
                 appendMissingRequiredProperties(lines, desc);
             } else {
+                BranchCoverageDIY.setBranchReached(3, 7); // ID: 7
                 append(lines, "return {{newInst}};");
             }
             append(lines, "}");
             for (Binding field : desc.fields) {
+                BranchCoverageDIY.setBranchReached(3, 8); // ID: 8
                 if (field.fromNames.length == 0) {
+                    BranchCoverageDIY.setBranchReached(3, 9); // ID: 9
                     continue;
                 }
                 appendVarDef(lines, field);
             }
             for (Binding setter : desc.setters) {
+                BranchCoverageDIY.setBranchReached(3, 10); // ID: 10
                 appendVarDef(lines, setter);
             }
         }
         for (WrapperDescriptor wrapper : desc.bindingTypeWrappers) {
+            BranchCoverageDIY.setBranchReached(3, 11); // ID: 11
             for (Binding param : wrapper.parameters) {
+                BranchCoverageDIY.setBranchReached(3, 12); // ID: 12
                 appendVarDef(lines, param);
             }
         }
         // === bind first field
         if (desc.onExtraProperties != null || !desc.keyValueTypeWrappers.isEmpty()) {
+            BranchCoverageDIY.setBranchReached(3, 13); // ID: 13
             append(lines, "java.util.Map extra = null;");
         }
         append(lines, "com.jsoniter.spi.Slice field = com.jsoniter.CodegenAccess.readObjectFieldAsSlice(iter);");
@@ -92,18 +105,23 @@ class CodegenImplObjectStrict {
         append(lines, "once = false;");
         String rendered = renderTriTree(trieTree);
         if (desc.ctor.parameters.isEmpty()) {
+            BranchCoverageDIY.setBranchReached(3, 14); // ID: 14
             // if not field or setter, the value will set to temp variable
             for (Binding field : desc.fields) {
+                BranchCoverageDIY.setBranchReached(3, 15); // ID: 15
                 if (field.fromNames.length == 0) {
+                    BranchCoverageDIY.setBranchReached(3, 16); // ID: 16
                     continue;
                 }
                 rendered = updateBindingSetOp(rendered, field);
             }
             for (Binding setter : desc.setters) {
+                BranchCoverageDIY.setBranchReached(3, 17); // ID: 17
                 rendered = updateBindingSetOp(rendered, setter);
             }
         }
         if (hasAnythingToBindFrom(allBindings)) {
+            BranchCoverageDIY.setBranchReached(3, 18); // ID: 18
             append(lines, "switch (field.len()) {");
             append(lines, rendered);
             append(lines, "}"); // end of switch
@@ -114,6 +132,7 @@ class CodegenImplObjectStrict {
         append(lines, "while (com.jsoniter.CodegenAccess.nextToken(iter) == ',') {");
         append(lines, "field = com.jsoniter.CodegenAccess.readObjectFieldAsSlice(iter);");
         if (hasAnythingToBindFrom(allBindings)) {
+            BranchCoverageDIY.setBranchReached(3, 19); // ID: 19
             append(lines, "switch (field.len()) {");
             append(lines, rendered);
             append(lines, "}"); // end of switch
@@ -121,25 +140,32 @@ class CodegenImplObjectStrict {
         appendOnUnknownField(lines, desc);
         append(lines, "}"); // end of while
         if (hasRequiredBinding) {
+            BranchCoverageDIY.setBranchReached(3, 20); // ID: 20
             append(lines, "if (tracker != " + expectedTracker + "L) {");
             appendMissingRequiredProperties(lines, desc);
             append(lines, "}");
         }
         if (desc.onExtraProperties != null) {
+            BranchCoverageDIY.setBranchReached(3, 21); // ID: 21
             appendSetExtraProperteis(lines, desc);
         }
         if (!desc.keyValueTypeWrappers.isEmpty()) {
+            BranchCoverageDIY.setBranchReached(3, 22); // ID: 22
             appendSetExtraToKeyValueTypeWrappers(lines, desc);
         }
         if (!desc.ctor.parameters.isEmpty()) {
+            BranchCoverageDIY.setBranchReached(3, 23); // ID: 23
             append(lines, String.format("%s obj = {{newInst}};", CodegenImplNative.getTypeName(desc.clazz)));
             for (Binding field : desc.fields) {
+                BranchCoverageDIY.setBranchReached(3, 24); // ID: 24
                 if (field.fromNames.length == 0) {
+                    BranchCoverageDIY.setBranchReached(3, 25); // ID: 25
                     continue;
                 }
                 append(lines, String.format("obj.%s = _%s_;", field.field.getName(), field.name));
             }
             for (Binding setter : desc.setters) {
+                BranchCoverageDIY.setBranchReached(3, 26); // ID: 26
                 append(lines, String.format("obj.%s(_%s_);", setter.method.getName(), setter.name));
             }
         }
