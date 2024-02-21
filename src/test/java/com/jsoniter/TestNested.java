@@ -2,11 +2,13 @@ package com.jsoniter;
 
 import com.jsoniter.any.Any;
 import junit.framework.TestCase;
+
 import org.junit.Assert;
 
 import java.io.IOException;
 
 public class TestNested extends TestCase {
+
     public void test_array_of_objects() throws IOException {
         JsonIterator iter = JsonIterator.parse(
                 "[{'field1':'11','field2':'12'},{'field1':'21','field2':'22'}]".replace('\'', '"'));

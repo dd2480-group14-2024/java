@@ -11,6 +11,9 @@ import com.jsoniter.any.TestList;
 import com.jsoniter.any.TestLong;
 import com.jsoniter.output.*;
 import com.jsoniter.output.TestInteger;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -60,4 +63,12 @@ import org.junit.runners.Suite;
         TestLong.class,
         TestOmitValue.class})
 public abstract class AllTestCases {
+        @AfterClass
+        public static void setUpBeforeClass() {
+                BranchCoverageDIY.writeResultsToFile(1);
+                BranchCoverageDIY.writeResultsToFile(2);
+                BranchCoverageDIY.writeResultsToFile(3);
+                BranchCoverageDIY.writeResultsToFile(4);
+                BranchCoverageDIY.writeResultsToFile(5);   
+        }  
 }
