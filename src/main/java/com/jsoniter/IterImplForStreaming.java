@@ -391,103 +391,153 @@ class IterImplForStreaming {
     public final static int readStringSlowPath(JsonIterator iter, int j) throws IOException {
         boolean isExpectingLowSurrogate = false;
         for (;;) {
+
+            BranchCoverageDIY.setBranchReached(2, 1); // ID: 1
+
             int bc = readByte(iter);
             if (bc == '"') {
+                BranchCoverageDIY.setBranchReached(2, 2); // ID: 2
                 return j;
+            } else {
+                BranchCoverageDIY.setBranchReached(2, 3); // ID: 3
             }
             if (bc == '\\') {
+                BranchCoverageDIY.setBranchReached(2, 4); // ID: 4
                 bc = readByte(iter);
                 switch (bc) {
                     case 'b':
+                        BranchCoverageDIY.setBranchReached(2, 5); // ID: 5
                         bc = '\b';
                         break;
                     case 't':
+                        BranchCoverageDIY.setBranchReached(2, 6); // ID: 6
                         bc = '\t';
                         break;
                     case 'n':
+                        BranchCoverageDIY.setBranchReached(2, 7); // ID: 7
                         bc = '\n';
                         break;
                     case 'f':
+                        BranchCoverageDIY.setBranchReached(2, 8); // ID: 8
                         bc = '\f';
                         break;
                     case 'r':
+                        BranchCoverageDIY.setBranchReached(2, 9); // ID: 9
                         bc = '\r';
                         break;
                     case '"':
                     case '/':
                     case '\\':
+                        BranchCoverageDIY.setBranchReached(2, 10); // ID: 10
                         break;
                     case 'u':
+                        BranchCoverageDIY.setBranchReached(2, 11); // ID: 11
                         bc = (IterImplString.translateHex(readByte(iter)) << 12) +
                                 (IterImplString.translateHex(readByte(iter)) << 8) +
                                 (IterImplString.translateHex(readByte(iter)) << 4) +
                                 IterImplString.translateHex(readByte(iter));
                         if (Character.isHighSurrogate((char) bc)) {
+                            BranchCoverageDIY.setBranchReached(2, 12); // ID: 12
                             if (isExpectingLowSurrogate) {
+                                BranchCoverageDIY.setBranchReached(2, 13); // ID: 13
                                 throw new JsonException("invalid surrogate");
                             } else {
+                                BranchCoverageDIY.setBranchReached(2, 14); // ID: 14
                                 isExpectingLowSurrogate = true;
                             }
                         } else if (Character.isLowSurrogate((char) bc)) {
+                            BranchCoverageDIY.setBranchReached(2, 15); // ID: 15
                             if (isExpectingLowSurrogate) {
+                                BranchCoverageDIY.setBranchReached(2, 16); // ID: 16
                                 isExpectingLowSurrogate = false;
                             } else {
+                                BranchCoverageDIY.setBranchReached(2, 17); // ID: 17
                                 throw new JsonException("invalid surrogate");
                             }
                         } else {
+                            BranchCoverageDIY.setBranchReached(2, 18); // ID: 18
                             if (isExpectingLowSurrogate) {
+                                BranchCoverageDIY.setBranchReached(2, 19); // ID: 19
                                 throw new JsonException("invalid surrogate");
+                            } else {
+                                BranchCoverageDIY.setBranchReached(2, 20); // ID: 20
                             }
                         }
                         break;
 
                     default:
+                        BranchCoverageDIY.setBranchReached(2, 21); // ID: 21
                         throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
                 }
             } else if ((bc & 0x80) != 0) {
+                BranchCoverageDIY.setBranchReached(2, 22); // ID: 22
                 final int u2 = readByte(iter);
                 if ((bc & 0xE0) == 0xC0) {
+                    BranchCoverageDIY.setBranchReached(2, 23); // ID: 23
                     bc = ((bc & 0x1F) << 6) + (u2 & 0x3F);
                 } else {
+                    BranchCoverageDIY.setBranchReached(2, 24); // ID: 24
                     final int u3 = readByte(iter);
                     if ((bc & 0xF0) == 0xE0) {
+                        BranchCoverageDIY.setBranchReached(2, 25); // ID: 25
                         bc = ((bc & 0x0F) << 12) + ((u2 & 0x3F) << 6) + (u3 & 0x3F);
                     } else {
+                        BranchCoverageDIY.setBranchReached(2, 26); // ID: 26
                         final int u4 = readByte(iter);
                         if ((bc & 0xF8) == 0xF0) {
+                            BranchCoverageDIY.setBranchReached(2, 27); // ID: 27
                             bc = ((bc & 0x07) << 18) + ((u2 & 0x3F) << 12) + ((u3 & 0x3F) << 6) + (u4 & 0x3F);
                         } else {
+                            BranchCoverageDIY.setBranchReached(2, 28); // ID: 28
                             throw iter.reportError("readStringSlowPath", "invalid unicode character");
                         }
 
                         if (bc >= 0x10000) {
+                            BranchCoverageDIY.setBranchReached(2, 29); // ID: 29
                             // check if valid unicode
-                            if (bc >= 0x110000)
+                            if (bc >= 0x110000) {
+                                BranchCoverageDIY.setBranchReached(2, 30); // ID: 30
                                 throw iter.reportError("readStringSlowPath", "invalid unicode character");
+                            } else {
+                                BranchCoverageDIY.setBranchReached(2, 31); // ID: 31
+                            }
 
                             // split surrogates
                             final int sup = bc - 0x10000;
                             if (iter.reusableChars.length == j) {
+                                BranchCoverageDIY.setBranchReached(2, 32); // ID: 32
                                 char[] newBuf = new char[iter.reusableChars.length * 2];
                                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                 iter.reusableChars = newBuf;
+                            } else {
+                                BranchCoverageDIY.setBranchReached(2, 33); // ID: 33
                             }
                             iter.reusableChars[j++] = (char) ((sup >>> 10) + 0xd800);
                             if (iter.reusableChars.length == j) {
+                                BranchCoverageDIY.setBranchReached(2, 34); // ID: 34
                                 char[] newBuf = new char[iter.reusableChars.length * 2];
                                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                 iter.reusableChars = newBuf;
+                            } else {
+                                BranchCoverageDIY.setBranchReached(2, 35); // ID: 35
                             }
                             iter.reusableChars[j++] = (char) ((sup & 0x3ff) + 0xdc00);
                             continue;
+                        } else {
+                            BranchCoverageDIY.setBranchReached(2, 36); // ID: 36
                         }
                     }
                 }
+            } else {
+                BranchCoverageDIY.setBranchReached(2, 37); // ID: 37
             }
             if (iter.reusableChars.length == j) {
+                BranchCoverageDIY.setBranchReached(2, 38); // ID: 38
                 char[] newBuf = new char[iter.reusableChars.length * 2];
                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                 iter.reusableChars = newBuf;
+            } else {
+                BranchCoverageDIY.setBranchReached(2, 39); // ID: 39
             }
             iter.reusableChars[j++] = (char) bc;
         }
