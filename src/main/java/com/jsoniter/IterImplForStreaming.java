@@ -568,6 +568,7 @@ class IterImplForStreaming {
         boolean dotFound;
     }
 
+    // CCN goes from 20 to 7
     public static final numberChars readNumber(final JsonIterator iter) throws IOException {
         int j = 0;
         boolean dotFound = false;
