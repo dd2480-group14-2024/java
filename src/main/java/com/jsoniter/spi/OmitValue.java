@@ -1,6 +1,9 @@
 package com.jsoniter.spi;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+
+import com.google.gson.reflect.TypeToken;
 
 public interface OmitValue {
 
@@ -140,6 +143,45 @@ public interface OmitValue {
                 return null;
             } else if ("null".equals(defaultValueToOmit)) {
                 return new OmitValue.Null();
+            } else {
+                TypeToken<?> typeToken = TypeToken.get(valueType);
+                Class<?> valueClass = typeToken.getRawType();
+                String format = defaultValueToOmit + " == %s"; //placeholder for actual val
+                Object defaultValue;
+
+                //if value class is primitive and format of default value (float, double, long)
+                if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("F")) {
+                    defaultValue = Float.valueOf(defaultValueToOmit);
+                } else if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("D")) {
+                    defaultValue = Double.valueOf(defaultValueToOmit);
+                } else if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("L")) {
+                    defaultValue = Long.valueOf(defaultValueToOmit.substring(0, defaultValueToOmit.length() - 1));
+                    format = defaultValueToOmit + " == %sL";
+                } else {
+                    //non primitive type creates instance of class, and throws runtime exeption with error message
+                    try {
+                        defaultValue = typeToken.getRawType().getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException e) {
+                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
+                    } catch (InvocationTargetException e) {
+                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
+                    }
+                }
+                //returns new instance with parsed default value and format string
+                return new OmitValue.Parsed(defaultValue, format);
+            }
+        }
+
+        /** original parse method
+        public static OmitValue parse(Type valueType, String defaultValueToOmit) {
+            if ("void".equals(defaultValueToOmit)) {
+                return null;
+            } else if ("null".equals(defaultValueToOmit)) {
+                return new OmitValue.Null();
             } else if (boolean.class.equals(valueType)) {
                 Boolean defaultValue = Boolean.valueOf(defaultValueToOmit);
                 return new OmitValue.Parsed(defaultValue, defaultValueToOmit + " == %s");
@@ -192,6 +234,7 @@ public interface OmitValue {
                 throw new UnsupportedOperationException("failed to parse defaultValueToOmit: " + defaultValueToOmit);
             }
         }
+        **/
 
         @Override
         public boolean shouldOmit(Object val) {
