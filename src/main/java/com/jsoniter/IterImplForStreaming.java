@@ -571,53 +571,55 @@ class IterImplForStreaming {
     public static final numberChars readNumber(final JsonIterator iter) throws IOException {
         int j = 0;
         boolean dotFound = false;
-        for (; ; ) {
+    
+        while (true) {
             for (int i = iter.head; i < iter.tail; i++) {
-                if (j == iter.reusableChars.length) {
-                    char[] newBuf = new char[iter.reusableChars.length * 2];
-                    System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
-                    iter.reusableChars = newBuf;
-                }
                 byte c = iter.buf[i];
-                switch (c) {
-                    case '.':
-                    case 'e':
-                    case 'E':
+                if (isNumberChar(c)) {
+                    if (isBufferSizeExceeded(j, iter)) {
+                        expandBuffer(iter);
+                    }
+                    if (isSpecialNumberChar(c)) {
                         dotFound = true;
-                        // fallthrough
-                    case '-':
-                    case '+':
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        iter.reusableChars[j++] = (char) c;
-                        break;
-                    default:
-                        iter.head = i;
-                        numberChars numberChars = new numberChars();
-                        numberChars.chars = iter.reusableChars;
-                        numberChars.charsLength = j;
-                        numberChars.dotFound = dotFound;
-                        return numberChars;
+                    }
+                    iter.reusableChars[j++] = (char) c;
+                } else {
+                    iter.head = i;
+                    return buildNumberChars(iter, j, dotFound);
                 }
             }
             if (!IterImpl.loadMore(iter)) {
                 iter.head = iter.tail;
-                numberChars numberChars = new numberChars();
-                numberChars.chars = iter.reusableChars;
-                numberChars.charsLength = j;
-                numberChars.dotFound = dotFound;
-                return numberChars;
+                return buildNumberChars(iter, j, dotFound);
             }
         }
     }
+    
+    private static boolean isNumberChar(byte c) {
+        return (c >= '0' && c <= '9') || c == '.' || c == 'e' || c == 'E' || c == '-' || c == '+';
+    }
+    
+    private static boolean isSpecialNumberChar(byte c) {
+        return c == '.' || c == 'e' || c == 'E';
+    }
+    
+    private static boolean isBufferSizeExceeded(int j, JsonIterator iter) {
+        return j == iter.reusableChars.length;
+    }
+    
+    private static void expandBuffer(JsonIterator iter) {
+        char[] newBuf = new char[iter.reusableChars.length * 2];
+        System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
+        iter.reusableChars = newBuf;
+    }
+    
+    private static numberChars buildNumberChars(JsonIterator iter, int charsLength, boolean dotFound) {
+        numberChars numberChars = new numberChars();
+        numberChars.chars = iter.reusableChars;
+        numberChars.charsLength = charsLength;
+        numberChars.dotFound = dotFound;
+        return numberChars;
+    }    
 
     static final double readDouble(final JsonIterator iter) throws IOException {
         return readDoubleSlowPath(iter);
