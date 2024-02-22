@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
+import com.jsoniter.BranchCoverageDIY;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.annotation.JsonIgnore;
@@ -334,108 +335,137 @@ public class GsonCompatibilityMode extends Config {
     @Override
     public Decoder createDecoder(String cacheKey, Type type) {
         if (Date.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 1); // ID: 1
             return new Decoder() {
                 @Override
                 public Object decode(JsonIterator iter) throws IOException {
                     DateFormat dateFormat = builder().dateFormat.get();
                     try {
+                        BranchCoverageDIY.setBranchReached(4, 2); // ID: 2
                         String input = iter.readString();
                         return dateFormat.parse(input);
                     } catch (ParseException e) {
+                        BranchCoverageDIY.setBranchReached(4, 3); // ID: 3
                         throw new JsonException(e);
                     }
                 }
             };
         } else if (String.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 4); // ID: 4
             return new Decoder() {
                 @Override
                 public Object decode(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.STRING) {
+                        BranchCoverageDIY.setBranchReached(4, 5); // ID: 5
                         return iter.readString();
                     } else if (valueType == ValueType.NUMBER) {
+                        BranchCoverageDIY.setBranchReached(4, 6); // ID: 6
                         return iter.readNumberAsString();
                     } else if (valueType == ValueType.BOOLEAN) {
+                        BranchCoverageDIY.setBranchReached(4, 7); // ID: 7
                         return iter.readBoolean() ? "true" : "false";
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 8); // ID: 8
                         iter.skip();
                         return null;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 9); // ID: 9
                         throw new JsonException("expect string, but found " + valueType);
                     }
                 }
             };
         } else if (boolean.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 10); // ID: 10
             return new Decoder.BooleanDecoder() {
                 @Override
                 public boolean decodeBoolean(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.BOOLEAN) {
+                        BranchCoverageDIY.setBranchReached(4, 11); // ID: 11
                         return iter.readBoolean();
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 12); // ID: 12
                         iter.skip();
                         return false;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 13); // ID: 13
                         throw new JsonException("expect boolean, but found " + valueType);
                     }
                 }
             };
         } else if (long.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 14); // ID: 14
             return new Decoder.LongDecoder() {
                 @Override
                 public long decodeLong(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.NUMBER) {
+                        BranchCoverageDIY.setBranchReached(4, 15); // ID: 15
                         return iter.readLong();
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 16); // ID: 16
                         iter.skip();
                         return 0;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 17); // ID: 17
                         throw new JsonException("expect long, but found " + valueType);
                     }
                 }
             };
         } else if (int.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 18); // ID: 18
             return new Decoder.IntDecoder() {
                 @Override
                 public int decodeInt(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.NUMBER) {
+                        BranchCoverageDIY.setBranchReached(4, 19); // ID: 19
                         return iter.readInt();
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 20); // ID: 20
                         iter.skip();
                         return 0;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 21); // ID: 21
                         throw new JsonException("expect int, but found " + valueType);
                     }
                 }
             };
         } else if (float.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 22); // ID: 22
             return new Decoder.FloatDecoder() {
                 @Override
                 public float decodeFloat(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.NUMBER) {
+                        BranchCoverageDIY.setBranchReached(4, 23); // ID: 23
                         return iter.readFloat();
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 24); // ID: 24
                         iter.skip();
                         return 0.0f;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 25); // ID: 25
                         throw new JsonException("expect float, but found " + valueType);
                     }
                 }
             };
         } else if (double.class == type) {
+            BranchCoverageDIY.setBranchReached(4, 26); // ID: 26
             return new Decoder.DoubleDecoder() {
                 @Override
                 public double decodeDouble(JsonIterator iter) throws IOException {
                     ValueType valueType = iter.whatIsNext();
                     if (valueType == ValueType.NUMBER) {
+                        BranchCoverageDIY.setBranchReached(4, 27); // ID: 27
                         return iter.readDouble();
                     } else if (valueType == ValueType.NULL) {
+                        BranchCoverageDIY.setBranchReached(4, 28); // ID: 28
                         iter.skip();
                         return 0.0d;
                     } else {
+                        BranchCoverageDIY.setBranchReached(4, 29); // ID: 29
                         throw new JsonException("expect float, but found " + valueType);
                     }
                 }
