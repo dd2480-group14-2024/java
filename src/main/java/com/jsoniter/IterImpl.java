@@ -214,6 +214,57 @@ class IterImpl {
         return false;
     }
 
+    private static int handleEscapeCharacter(JsonIterator iter, int bc, int i, boolean isExpectingLowSurrogate) {
+        switch (bc) {
+            case 'b':
+                bc = '\b';
+                break;
+            case 't':
+                bc = '\t';
+                break;
+            case 'n':
+                bc = '\n';
+                break;
+            case 'f':
+                bc = '\f';
+                break;
+            case 'r':
+                bc = '\r';
+                break;
+            case '"':
+            case '/':
+            case '\\':
+                break;
+            case 'u':
+                bc = (IterImplString.translateHex(iter.buf[i++]) << 12) +
+                        (IterImplString.translateHex(iter.buf[i++]) << 8) +
+                        (IterImplString.translateHex(iter.buf[i++]) << 4) +
+                        IterImplString.translateHex(iter.buf[i++]);
+                if (Character.isHighSurrogate((char) bc)) {
+                    if (isExpectingLowSurrogate) {
+                        throw new JsonException("invalid surrogate");
+                    } else {
+                        isExpectingLowSurrogate = true;
+                    }
+                } else if (Character.isLowSurrogate((char) bc)) {
+                    if (isExpectingLowSurrogate) {
+                        isExpectingLowSurrogate = false;
+                    } else {
+                        throw new JsonException("invalid surrogate");
+                    }
+                } else {
+                    if (isExpectingLowSurrogate) {
+                        throw new JsonException("invalid surrogate");
+                    }
+                }
+                break;
+
+            default:
+                throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
+        }
+        return bc;
+    }
+
     public final static int readStringSlowPath(JsonIterator iter, int j) throws IOException {
         try {
             boolean isExpectingLowSurrogate = false;
@@ -225,53 +276,7 @@ class IterImpl {
                 }
                 if (bc == '\\') {
                     bc = iter.buf[i++];
-                    switch (bc) {
-                        case 'b':
-                            bc = '\b';
-                            break;
-                        case 't':
-                            bc = '\t';
-                            break;
-                        case 'n':
-                            bc = '\n';
-                            break;
-                        case 'f':
-                            bc = '\f';
-                            break;
-                        case 'r':
-                            bc = '\r';
-                            break;
-                        case '"':
-                        case '/':
-                        case '\\':
-                            break;
-                        case 'u':
-                            bc = (IterImplString.translateHex(iter.buf[i++]) << 12) +
-                                    (IterImplString.translateHex(iter.buf[i++]) << 8) +
-                                    (IterImplString.translateHex(iter.buf[i++]) << 4) +
-                                    IterImplString.translateHex(iter.buf[i++]);
-                            if (Character.isHighSurrogate((char) bc)) {
-                                if (isExpectingLowSurrogate) {
-                                    throw new JsonException("invalid surrogate");
-                                } else {
-                                    isExpectingLowSurrogate = true;
-                                }
-                            } else if (Character.isLowSurrogate((char) bc)) {
-                                if (isExpectingLowSurrogate) {
-                                    isExpectingLowSurrogate = false;
-                                } else {
-                                    throw new JsonException("invalid surrogate");
-                                }
-                            } else {
-                                if (isExpectingLowSurrogate) {
-                                    throw new JsonException("invalid surrogate");
-                                }
-                            }
-                            break;
-
-                        default:
-                            throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
-                    }
+                    bc = handleEscapeCharacter(iter, bc, i, isExpectingLowSurrogate);
                 } else if ((bc & 0x80) != 0) {
                     final int u2 = iter.buf[i++];
                     if ((bc & 0xE0) == 0xC0) {
