@@ -3,7 +3,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class TestIterImplStreamingNum {
+public class TestIterImplStreamingNum { 
 
     // Test reading a simple integer value without any special characters or decimal points
     @Test
@@ -27,7 +27,7 @@ public class TestIterImplStreamingNum {
 
     // Test to ensure that the internal buffer expands as needed when reading a long number
     @Test
-    public void testBufferExpansionNeeded() throws Exception {
+    public void testReadBufferExpansionNeeded() throws Exception {
         // Assuming initial buffer size is smaller than the number length
         byte[] jsonBytes = "1234567890123456".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
@@ -38,7 +38,7 @@ public class TestIterImplStreamingNum {
 
     // Test reading a number that is terminated by non-numeric characters
     @Test
-    public void testNonNumericCharactersTermination() throws Exception {
+    public void testReadNonNumericCharactersTermination() throws Exception {
         byte[] jsonBytes = "123abc".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
         IterImplForStreaming.numberChars result = IterImplForStreaming.readNumber(iter);
