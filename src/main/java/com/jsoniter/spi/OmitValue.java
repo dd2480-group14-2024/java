@@ -138,6 +138,50 @@ public interface OmitValue {
             this.code = code;
         }
 
+        private static Object parsePrimitive(Class<?> valueClass, String defaultValueToOmit) {
+            if (valueClass.equals(boolean.class)) {
+                return Boolean.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(byte.class)) {
+                return Byte.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(short.class)) {
+                return Short.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(int.class)) {
+                return Integer.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(long.class)) {
+                return Long.valueOf(defaultValueToOmit.substring(0, defaultValueToOmit.length() - 1));
+            } else if (valueClass.equals(float.class)) {
+                return Float.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(double.class)) {
+                return Double.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(char.class) && defaultValueToOmit.length() == 1) {
+                return defaultValueToOmit.charAt(0);
+            } else {
+                throw new UnsupportedOperationException("Failed to parse defaultValueToOmit: " + defaultValueToOmit);
+            }
+        }
+        
+        private static Object parseWrapper(Class<?> valueClass, String defaultValueToOmit) {
+            if (valueClass.equals(Boolean.class)) {
+                return Boolean.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Byte.class)) {
+                return Byte.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Short.class)) {
+                return Short.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Integer.class)) {
+                return Integer.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Long.class)) {
+                return Long.valueOf(defaultValueToOmit.substring(0, defaultValueToOmit.length() - 1));
+            } else if (valueClass.equals(Float.class)) {
+                return Float.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Double.class)) {
+                return Double.valueOf(defaultValueToOmit);
+            } else if (valueClass.equals(Character.class) && defaultValueToOmit.length() == 1) {
+                return defaultValueToOmit.charAt(0);
+            } else {
+                throw new UnsupportedOperationException("Failed to parse defaultValueToOmit: " + defaultValueToOmit);
+            }
+        }
+        
         public static OmitValue parse(Type valueType, String defaultValueToOmit) {
             if ("void".equals(defaultValueToOmit)) {
                 return null;
@@ -146,38 +190,22 @@ public interface OmitValue {
             } else {
                 TypeToken<?> typeToken = TypeToken.get(valueType);
                 Class<?> valueClass = typeToken.getRawType();
-                String format = defaultValueToOmit + " == %s"; //placeholder for actual val
+                String format = defaultValueToOmit + " == %s";
+        
                 Object defaultValue;
-
-                //if value class is primitive and format of default value (float, double, long)
-                if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("F")) {
-                    defaultValue = Float.valueOf(defaultValueToOmit);
-                } else if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("D")) {
-                    defaultValue = Double.valueOf(defaultValueToOmit);
-                } else if (valueClass.isPrimitive() && defaultValueToOmit.endsWith("L")) {
-                    defaultValue = Long.valueOf(defaultValueToOmit.substring(0, defaultValueToOmit.length() - 1));
-                    format = defaultValueToOmit + " == %sL";
+                if (valueClass.isPrimitive()) {
+                    defaultValue = parsePrimitive(valueClass, defaultValueToOmit);
                 } else {
-                    //non primitive type creates instance of class, and throws runtime exeption with error message
-                    try {
-                        defaultValue = typeToken.getRawType().getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException("Error creating instance: " + e.getMessage(), e);
-                    }
+                    defaultValue = parseWrapper(valueClass, defaultValueToOmit);
                 }
-                //returns new instance with parsed default value and format string
+        
                 return new OmitValue.Parsed(defaultValue, format);
             }
         }
+        
 
         /** 
-         * CNN = 21 to 13
+         * CNN = 21 to 4, 10, 10
          * original parse method
         public static OmitValue parse(Type valueType, String defaultValueToOmit) {
             if ("void".equals(defaultValueToOmit)) {
