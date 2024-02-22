@@ -49,8 +49,49 @@ public class TestWhatIsNext extends TestCase {
      * 
      * @throws IOException if whatIsNext throws an IOException
      */
-    public void testWhatIsNextNull() throws IOException {
+    public void testWhatIsNextArray() throws IOException {
         JsonIterator parser = JsonIterator.parse("[1,2,3]");
         assertEquals(ValueType.ARRAY, parser.whatIsNext());
+    }
+
+    /**
+     * Assert that parser.whatIsNext() returns INVALID for the string "abcdefg"
+     * 
+     * @throws IOException if whatIsNext throws an IOException
+     */
+    public void testWhatIsNextInvalid() throws IOException {
+        JsonIterator parser = JsonIterator.parse("abcdefg");
+        assertEquals(ValueType.INVALID, parser.whatIsNext());
+    }
+
+    /**
+     * Assert that parser.whatIsNext() returns NUMBER for the string "2147483649"
+     * 
+     * @throws IOException if whatIsNext throws an IOException
+     */
+    public void testWhatIsNextLong() throws IOException {
+        JsonIterator parser = JsonIterator.parse("2147483649");
+        assertEquals(ValueType.NUMBER, parser.whatIsNext());
+    }
+
+    /**
+     * Assert that parser.whatIsNext() returns NUMBER for the string "-123456789"
+     * 
+     * @throws IOException if whatIsNext throws an IOException
+     */
+    public void testWhatIsNextNegativeLong() throws IOException {
+        JsonIterator parser = JsonIterator.parse("-2147483695");
+        assertEquals(ValueType.NUMBER, parser.whatIsNext());
+    }
+    
+
+    /**
+     * Assert that parser.whatIsNext() returns NULL for the string "null"
+     * 
+     * @throws IOException if whatIsNext throws an IOException
+     */
+    public void testWhatIsNextNull() throws IOException {
+        JsonIterator parser = JsonIterator.parse("null");
+        assertEquals(ValueType.NULL, parser.whatIsNext());
     }
 }
