@@ -25,7 +25,6 @@ class CodegenImplObjectStrict {
         List<Binding> allBindings = desc.allDecoderBindings();
         int lastRequiredIdx = assignMaskForRequiredProperties(allBindings);
         boolean hasRequiredBinding = lastRequiredIdx > 0;
-        long expectedTracker = Long.MAX_VALUE >> (63 - lastRequiredIdx);
         Map<Integer, Object> trieTree = buildTriTree(allBindings);
         StringBuilder lines = new StringBuilder();
         /*
@@ -86,6 +85,13 @@ class CodegenImplObjectStrict {
         if (desc.onExtraProperties != null || !desc.keyValueTypeWrappers.isEmpty()) {
             append(lines, "java.util.Map extra = null;");
         }
+        return genObjectUsingStrictHelper(desc, lines, trieTree, allBindings, hasRequiredBinding);
+    }
+
+    private static String genObjectUsingStrictHelper(ClassDescriptor desc, StringBuilder lines, Map<Integer, Object> trieTree, List<Binding> allBindings, boolean hasRequiredBinding) {
+        int lastRequiredIdx = assignMaskForRequiredProperties(allBindings);
+        long expectedTracker = Long.MAX_VALUE >> (63 - lastRequiredIdx);
+        
         append(lines, "com.jsoniter.spi.Slice field = com.jsoniter.CodegenAccess.readObjectFieldAsSlice(iter);");
         append(lines, "boolean once = true;");
         append(lines, "while (once) {");
@@ -148,6 +154,7 @@ class CodegenImplObjectStrict {
         return lines.toString()
                 .replace("{{clazz}}", desc.clazz.getCanonicalName())
                 .replace("{{newInst}}", CodegenImplObjectHash.genNewInstCode(desc.clazz, desc.ctor));
+
     }
 
     private static void appendSetExtraToKeyValueTypeWrappers(StringBuilder lines, ClassDescriptor desc) {
