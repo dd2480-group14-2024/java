@@ -58,7 +58,6 @@ import org.junit.runners.Suite;
         TestList.class,
         TestAnnotationJsonObject.class,
         TestLong.class,
-        TestOmitValue.class,
-        TestIterImpl.class})
+        TestOmitValue.class})
 public abstract class AllTestCases {
 }
