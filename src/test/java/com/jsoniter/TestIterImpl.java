@@ -1,40 +1,48 @@
 package com.jsoniter;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import com.jsoniter.spi.JsonException;
+import org.junit.Test;
 
 public class TestIterImpl {
 
-    @Test(expected = JsonException.class)
+    @Test
     public void testReadStringSlowPathEscapedb() throws Exception {
-        byte[] jsonBytes = { 92 , 98 };
+        byte[] jsonBytes = "\\b{\"key\":\"\\b\"}".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
 
-        IterImpl.readStringSlowPath(iter, 0);
+        int res = IterImpl.readStringSlowPath(iter, 0);
+
+        assertEquals(res, 2);
     }
 
-    @Test(expected = JsonException.class)
+    @Test
     public void testReadStringSlowPathEscapedn() throws Exception {
-        byte[] jsonBytes = { 92 , 110 };
+        byte[] jsonBytes = "\\n{\"key\":\"\\n\"}".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
 
-        IterImpl.readStringSlowPath(iter, 0);
+        int res = IterImpl.readStringSlowPath(iter, 0);
+
+        assertEquals(res, 2);
     }
 
-    @Test(expected = JsonException.class)
+    @Test
     public void testReadStringSlowPathEscapedf() throws Exception {
-        byte[] jsonBytes = { 92 , 102 };
+        byte[] jsonBytes = "\\f{\"key\":\"\\f\"}".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
 
-        IterImpl.readStringSlowPath(iter, 0);
+        int res = IterImpl.readStringSlowPath(iter, 0);
+
+        assertEquals(res, 2);
     }
 
-    @Test(expected = JsonException.class)
+    @Test
     public void testReadStringSlowPathEscapedr() throws Exception {
-        byte[] jsonBytes = { 92 , 114 };
+        byte[] jsonBytes = "\\r{\"key\":\"\\r\"}".getBytes();
         JsonIterator iter = JsonIterator.parse(jsonBytes);
 
-        IterImpl.readStringSlowPath(iter, 0);
+        int res = IterImpl.readStringSlowPath(iter, 0);
+
+        assertEquals(res, 2);
     }
 }
